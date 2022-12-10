@@ -1,3 +1,4 @@
+import numbers
 import time
 
 import mysql.connector
@@ -8,44 +9,16 @@ print(database)
 
 cursor = database.cursor()
 
-Ip = input("Zadejte požadovanou IP adresu ")
-Ip = Ip.split(".")
-if (Ip.__len__() == 4):
-    Query = ("SELECT ip1.city, ip1.stateprov, ip1.country, ip1.ip_start, ip1.ip_end FROM dbip_lookup_educa ip1 " +
-             "WHERE ip1.id in (" + (
-                                    "SELECT ip41.id FROM dbip_lookup_educa ip41 " +
-                                    "WHERE  (ip_start_1 < " + Ip[0] + " AND ip_end_1 > " + Ip[0] + ")"
-                                    ) + ")" +
+Imput = input("Zadejte požadovanou IP adresu ")
+SplitIp = Imput.split(".")
 
-             "OR ip1.id in (" + (
-                                "SELECT ip32.id FROM dbip_lookup_educa ip32 " +
-                                "WHERE ip32.id in (" + (
-                                                        "SELECT ip42.id FROM dbip_lookup_educa ip42 " +
-                                                        "WHERE (ip_start_1 = " + Ip[0] + " OR ip_end_1 = " + Ip[0] + ")"
-                                                      ) + ") " +
-                                "AND (ip32.ip_start_2 < " + Ip[1] + " AND ip32.ip_end_2 > " + Ip[1] + ")"
-                                ) + ")" +
-                                    # Pocaď done
-             "OR ip1.id in (" + (
-                                     "SELECT ip2.id FROM dbip_lookup_educa ip2 " +
-                                     "WHERE ip2.id in (" + (
-                                                            "SELECT ip3.id FROM dbip_lookup_educa ip3 " +
-                                                            "WHERE ip3.id in (" + (
-                                                                                    "SELECT ip4.id FROM dbip_lookup_educa ip4 " +
-                                                                                    "WHERE  (ip_start_1 <= " + Ip[0] + " AND ip_end_1 >= " + Ip[0] + ")"
-                                                                                  ) + ")"
-                                                            ) + ")"
-                                    ) + ")" +
-             "OR ip1.id in (" + (
-                     "SELECT ip2.id FROM dbip_lookup_educa ip2 " +
-                     "WHERE ip2.id in (" + (
-                             "SELECT ip3.id FROM dbip_lookup_educa ip3 " +
-                             "WHERE ip3.id in (" + (
-                                     "SELECT ip4.id FROM dbip_lookup_educa ip4 " +
-                                     "WHERE  (ip_start_1 <= " + Ip[0] + " AND ip_end_1 >= " + Ip[0] + ")"
-                             ) + ")"
-                     ) + ")"
-             ) + ")"
+if (SplitIp.__len__() == 4):
+    Imput = (int(SplitIp[0]) * 1000000000 + int(SplitIp[1]) * 1000000 + int(SplitIp[2]) * 1000 + int(
+        SplitIp[3])).__str__()
+    print(Imput)
+    Query = ("SELECT dbs.city, dbs.stateprov, dbs.country, dbs.ip_start, dbs.ip_end FROM dbip_lookup_educa dbs " +
+             "WHERE dbs.ip_start_dotless <= " + Imput + " AND dbs.ip_end_dotless >= " + Imput + " " +
+             "LIMIT 1"
              )
     TimeStart = time.time()
     cursor.execute(Query)
@@ -57,3 +30,4 @@ if (Ip.__len__() == 4):
         for cell in row:
             time.sleep(0)
             # print(cell)
+    print()
